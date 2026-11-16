@@ -22,6 +22,7 @@ export const getExplorerLink = (
   blockExplorerUriTemplate: ChainInfo['blockExplorerUriTemplate'],
 ): { href: string; title: string } => {
   const href = getHashedExplorerUrl(hash, blockExplorerUriTemplate)
+  if (!href) return { href: '', title: 'No block explorer is configured for this fork' }
   const title = `View on ${new URL(href).hostname}`
 
   return { href, title }

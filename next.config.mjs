@@ -4,6 +4,7 @@ import withPWAInit from '@ducanh2912/next-pwa'
 
 const withPWA = withPWAInit({
   dest: 'public',
+  disable: true,
   workboxOptions: {
     mode: 'production',
   },
@@ -29,6 +30,7 @@ const nextConfig = {
     dirs: ['src'],
   },
   experimental: {
+    cpus: 2,
     optimizePackageImports: [
       '@mui/material',
       '@mui/icons-material',

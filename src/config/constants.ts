@@ -6,7 +6,7 @@ export const IS_DEV = process.env.NODE_ENV === 'development'
 // Magic numbers
 export const POLLING_INTERVAL = 15_000
 export const BASE_TX_GAS = 21_000
-export const LS_NAMESPACE = 'ETERNALSAFE__'
+export const LS_NAMESPACE = 'UR_REHERSAL_SAFE__'
 export const LATEST_SAFE_VERSION = process.env.NEXT_PUBLIC_SAFE_VERSION || '1.4.1'
 
 // Wallets

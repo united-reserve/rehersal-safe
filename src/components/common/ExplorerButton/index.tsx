@@ -23,6 +23,7 @@ const ExplorerButton = ({
       target="_blank"
       rel="noreferrer"
       href={href}
+      disabled={!href}
       size="small"
       sx={{ color: 'inherit' }}
       onClick={onClick}

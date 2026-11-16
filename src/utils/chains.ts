@@ -28,7 +28,7 @@ export const getBlockExplorerLink = (
   chain: ChainInfo,
   address: string,
 ): { href: string; title: string } | undefined => {
-  if (chain.blockExplorerUriTemplate) {
+  if (chain.blockExplorerUriTemplate?.address && chain.blockExplorerUriTemplate?.txHash) {
     return getExplorerLink(address, chain.blockExplorerUriTemplate)
   }
 }

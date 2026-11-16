@@ -62,6 +62,8 @@ export const getSafeDeployProps = async (
  * Create a Safe creation transaction via Core SDK and submits it to the wallet
  */
 export const createNewSafe = async (ethersProvider: Web3Provider, props: DeploySafeProps): Promise<Safe> => {
+  const chainId = await ethersProvider.send('eth_chainId', [])
+  if (Number(chainId) !== 7311026) throw new Error('Switch your wallet to United Reserve Rehearsal (7311026).')
   const ethAdapter = createEthersAdapter(ethersProvider)
 
   const safeFactory = await SafeFactory.create({ ethAdapter, safeVersion: LATEST_SAFE_VERSION as SafeVersion })

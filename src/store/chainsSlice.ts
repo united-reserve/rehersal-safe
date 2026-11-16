@@ -13,7 +13,7 @@ export const chainsSlice = slice
 export const selectChains = createSelector([selector, selectCustomChainsAsLoadable], (chains, customChains) => {
   return {
     loading: false,
-    data: [...chains.data, ...customChains.data],
+    data: initialState,
     error: chains.error || customChains.error,
   }
 })
