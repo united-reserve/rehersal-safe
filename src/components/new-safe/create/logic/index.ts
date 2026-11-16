@@ -66,7 +66,11 @@ export const createNewSafe = async (ethersProvider: Web3Provider, props: DeployS
   if (Number(chainId) !== 7311026) throw new Error('Switch your wallet to United Reserve Rehearsal (7311026).')
   const ethAdapter = createEthersAdapter(ethersProvider)
 
-  const safeFactory = await SafeFactory.create({ ethAdapter, safeVersion: LATEST_SAFE_VERSION as SafeVersion })
+  const safeFactory = await SafeFactory.create({
+    ethAdapter,
+    safeVersion: LATEST_SAFE_VERSION as SafeVersion,
+    isL1SafeMasterCopy: true,
+  })
   return safeFactory.deploySafe(props)
 }
 
