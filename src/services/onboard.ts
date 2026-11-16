@@ -22,7 +22,9 @@ export const createOnboard = (
     token: cfg.nativeCurrency.symbol,
     color: cfg.theme.backgroundColor,
     publicRpcUrl: cfg.publicRpcUri.value,
-    blockExplorerUrl: new URL(cfg.blockExplorerUriTemplate.address).origin,
+    blockExplorerUrl: cfg.blockExplorerUriTemplate.address
+      ? new URL(cfg.blockExplorerUriTemplate.address).origin
+      : undefined,
   }))
 
   onboard = Onboard({
