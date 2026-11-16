@@ -1,8 +1,10 @@
+import { initialState } from '@/store/settingsSlice'
 import { getChainsConfig } from './supportedChains'
 import { getProxyFactoryDeployment, getSafeSingletonDeployment } from '@safe-global/safe-deployments'
 describe('rehearsal network configuration', () => {
   it('only exposes the mainnet fork and its RPC', () => {
     const chains = getChainsConfig()
+    expect(initialState.env.rpc['7311026']).toBe('https://2-31-103-209.sslip.io')
     expect(chains).toHaveLength(1)
     expect(chains[0].chainId).toBe('7311026')
     expect(chains[0].publicRpcUri.value).toBe('https://2-31-103-209.sslip.io')
