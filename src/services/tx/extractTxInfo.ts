@@ -18,7 +18,7 @@ import type { Custom, MultisigExecutionDetails, TransactionData } from '@safe-gl
 import { ethers } from 'ethers'
 import { EternalSafeTransaction } from '@/store/addedTxsSlice'
 import { buildMultisigTxId, normalizeTxId } from '@/utils/tx-id'
-import { decodeTxData, isTrustedDelegateCallTarget } from './decodeTxData'
+import { decodeTxData, isTrustedDelegateCall } from './decodeTxData'
 
 const ZERO_ADDRESS: string = '0x0000000000000000000000000000000000000000'
 const EMPTY_DATA: string = '0x'
@@ -154,7 +154,7 @@ export const extractTxDetails = async (
     value: safeTx.data.value,
     operation,
     addressInfoIndex: undefined,
-    trustedDelegateCallTarget: isTrustedDelegateCallTarget(safe.chainId, safeTx.data.to),
+    trustedDelegateCallTarget: isTrustedDelegateCall(safe.chainId, safeTx.data.to, dataDecoded),
   }
 
   const txKey = await transactionKey(safeTx)

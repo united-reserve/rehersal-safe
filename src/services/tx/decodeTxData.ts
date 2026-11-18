@@ -68,10 +68,16 @@ const unpackMultiSend = (packed: string): InternalTransaction[] => {
 
 export const decodeTxData = (data: string): DataDecoded | undefined => decodeCall(data)
 
-export const isTrustedDelegateCallTarget = (chainId: string, to: string): boolean => {
+const isCanonicalMultiSend = (chainId: string, to: string): boolean => {
   return [..._MULTI_SEND_DEPLOYMENTS, ..._MULTI_SEND_CALL_ONLY_DEPLOYMENTS].some((deployment) =>
     [deployment.networkAddresses[chainId] ?? []]
       .flat()
       .some((type) => sameAddress(deployment.deployments[type]?.address, to)),
   )
+}
+
+// MultiSend executes nested delegate calls, so only a decoded batch of plain calls is trusted
+export const isTrustedDelegateCall = (chainId: string, to: string, dataDecoded?: DataDecoded): boolean => {
+  const calls = dataDecoded?.method === 'multiSend' ? dataDecoded.parameters?.[0].valueDecoded : undefined
+  return isCanonicalMultiSend(chainId, to) && !!calls && calls.every(({ operation }) => operation === 0)
 }

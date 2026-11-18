@@ -1,4 +1,4 @@
-import { decodeTxData, isTrustedDelegateCallTarget } from '../decodeTxData'
+import { decodeTxData, isTrustedDelegateCall } from '../decodeTxData'
 
 // MultiSendCallOnly batch of two AddressRegistry set(bytes32,address) calls
 const WIRING_BATCH =
@@ -63,17 +63,61 @@ describe('decodeTxData', () => {
   })
 })
 
-describe('isTrustedDelegateCallTarget', () => {
-  it('trusts the canonical 1.4.1 and 1.5.0 MultiSend and MultiSendCallOnly contracts', () => {
-    expect(isTrustedDelegateCallTarget(CHAIN_ID, '0x9641d764fc13c8B624c04430C7356C1C7C8102e2')).toBe(true)
-    expect(isTrustedDelegateCallTarget(CHAIN_ID, '0x38869bf66a61cF6bDB996A6aE40D5853Fd43B526')).toBe(true)
-    expect(isTrustedDelegateCallTarget(CHAIN_ID, '0xA83c336B20401Af773B6219BA5027174338D1836')).toBe(true)
-    expect(isTrustedDelegateCallTarget(CHAIN_ID, '0x218543288004CD07832472D464648173c77D7eB7')).toBe(true)
-    expect(isTrustedDelegateCallTarget(CHAIN_ID, '0x9641d764fc13c8b624c04430c7356c1c7c8102e2')).toBe(true)
+// Packs calls as MultiSend expects and wraps them in multiSend(bytes)
+const encodeBatch = (calls: Array<{ operation: number; to: string; data: string }>) => {
+  const packed = calls
+    .map(
+      ({ operation, to, data }) =>
+        operation.toString(16).padStart(2, '0') +
+        to.slice(2).toLowerCase() +
+        '00'.repeat(32) +
+        ((data.length - 2) / 2).toString(16).padStart(64, '0') +
+        data.slice(2),
+    )
+    .join('')
+  const length = packed.length / 2
+  return (
+    '0x8d80ff0a' +
+    (32).toString(16).padStart(64, '0') +
+    length.toString(16).padStart(64, '0') +
+    packed.padEnd(Math.ceil(packed.length / 64) * 64, '0')
+  )
+}
+
+describe('isTrustedDelegateCall', () => {
+  const MULTI_SEND_CALL_ONLY_141 = '0x9641d764fc13c8B624c04430C7356C1C7C8102e2'
+  const MULTI_SEND_141 = '0x38869bf66a61cF6bDB996A6aE40D5853Fd43B526'
+  const MULTI_SEND_CALL_ONLY_150 = '0xA83c336B20401Af773B6219BA5027174338D1836'
+  const MULTI_SEND_150 = '0x218543288004CD07832472D464648173c77D7eB7'
+  const REGISTRY = '0x6f45eAD07B69211d4BE9ae43e1574bb5a5f71d96'
+
+  it('trusts a batch of plain calls to any canonical 1.4.1 or 1.5.0 MultiSend', () => {
+    const batch = decodeTxData(WIRING_BATCH)
+    for (const target of [MULTI_SEND_CALL_ONLY_141, MULTI_SEND_141, MULTI_SEND_CALL_ONLY_150, MULTI_SEND_150]) {
+      expect(isTrustedDelegateCall(CHAIN_ID, target, batch)).toBe(true)
+    }
+    expect(isTrustedDelegateCall(CHAIN_ID, MULTI_SEND_CALL_ONLY_141.toLowerCase(), batch)).toBe(true)
   })
 
-  it('does not trust any other target', () => {
-    expect(isTrustedDelegateCallTarget(CHAIN_ID, '0x0E44644106A3bB83D7872F8511d90a4479fE751d')).toBe(false)
-    expect(isTrustedDelegateCallTarget(CHAIN_ID, '0xad32ed6f41232970DEdeff94A99481EDEEde877c')).toBe(false)
+  it('does not trust a MultiSend batch with an inner delegate call', () => {
+    const batch = decodeTxData(
+      encodeBatch([
+        { operation: 0, to: REGISTRY, data: SET_CODE_SIGNER },
+        { operation: 1, to: REGISTRY, data: SET_CODE_SIGNER },
+      ]),
+    )
+    expect(batch?.parameters?.[0].valueDecoded).toHaveLength(2)
+    expect(isTrustedDelegateCall(CHAIN_ID, MULTI_SEND_141, batch)).toBe(false)
+  })
+
+  it('does not trust undecodable data to a canonical MultiSend', () => {
+    expect(isTrustedDelegateCall(CHAIN_ID, MULTI_SEND_CALL_ONLY_141, decodeTxData('0xdeadbeef'))).toBe(false)
+    expect(isTrustedDelegateCall(CHAIN_ID, MULTI_SEND_CALL_ONLY_141, decodeTxData(SET_CODE_SIGNER))).toBe(false)
+  })
+
+  it('does not trust a batch sent to any other target', () => {
+    const batch = decodeTxData(WIRING_BATCH)
+    expect(isTrustedDelegateCall(CHAIN_ID, '0x0E44644106A3bB83D7872F8511d90a4479fE751d', batch)).toBe(false)
+    expect(isTrustedDelegateCall(CHAIN_ID, '0xad32ed6f41232970DEdeff94A99481EDEEde877c', batch)).toBe(false)
   })
 })
