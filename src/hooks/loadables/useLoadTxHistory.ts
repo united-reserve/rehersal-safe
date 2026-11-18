@@ -3,7 +3,7 @@ import useAsync, { type AsyncResult } from '../useAsync'
 import { Errors, logError } from '@/services/exceptions'
 import useSafeInfo from '../useSafeInfo'
 import useIntervalCounter from '@/hooks/useIntervalCounter'
-import { POLLING_INTERVAL } from '@/config/constants'
+import { HISTORY_FROM_BLOCK, POLLING_INTERVAL } from '@/config/constants'
 import { useMultiWeb3ReadOnly } from '@/hooks/wallets/web3'
 import { useAppDispatch } from '@/store'
 import { showNotification } from '@/store/notificationsSlice'
@@ -56,7 +56,7 @@ export const useLoadTxHistory = (): AsyncResult<TxHistory> => {
 
       if (!safeContract) return
 
-      const logs = await safeContract.queryFilter(safeContract.filters.ExecutionSuccess(), 0, 'latest')
+      const logs = await safeContract.queryFilter(safeContract.filters.ExecutionSuccess(), HISTORY_FROM_BLOCK, 'latest')
 
       let txs = await Promise.all(
         logs.map(async (log, i) => {

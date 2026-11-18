@@ -8,6 +8,8 @@ export const POLLING_INTERVAL = 15_000
 export const BASE_TX_GAS = 21_000
 export const LS_NAMESPACE = 'UR_REHERSAL_SAFE__'
 export const LATEST_SAFE_VERSION = process.env.NEXT_PUBLIC_SAFE_VERSION || '1.4.1'
+// First block searched for Safe execution logs; the fork's upstream refuses log queries from genesis
+export const HISTORY_FROM_BLOCK = Number(process.env.NEXT_PUBLIC_HISTORY_FROM_BLOCK || 26441533)
 
 // Wallets
 export const WC_PROJECT_ID = process.env.NEXT_PUBLIC_WC_PROJECT_ID || ''
