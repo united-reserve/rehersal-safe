@@ -5,7 +5,7 @@ import useWallet from '@/hooks/wallets/useWallet'
 import SignOrExecuteForm from '@/components/tx/SignOrExecuteForm'
 import {
   isExecutable,
-  isMultisigExecutionInfo,
+  isMultisigDetailedExecutionInfo,
   isSignableBy,
   type TransactionDetails,
 } from '@/utils/transaction-guards'
@@ -25,16 +25,18 @@ const SIGN_EXECUTE_TEXT = 'Sign or immediately execute this transaction.'
 const ConfirmProposedTx = ({ txSummary, txDetails }: ConfirmProposedTxProps): ReactElement => {
   const wallet = useWallet()
   const { safe, safeAddress } = useSafeInfo()
-  const { setSafeTx, setSafeTxError, setNonce } = useContext(SafeTxContext)
+  const { setSafeTx, setSafeTxError, setNonce, setSafeTxGas } = useContext(SafeTxContext)
 
   const txId = txSummary.id
-  const txNonce = isMultisigExecutionInfo(txSummary.executionInfo) ? txSummary.executionInfo.nonce : undefined
   const canExecute = isExecutable(txSummary, wallet?.address || '', safe)
   const canSign = isSignableBy(txSummary, wallet?.address || '')
 
+  // An existing transaction is confirmed exactly as it is, so its nonce and safeTxGas are never re-derived
   useEffect(() => {
-    txNonce && setNonce(txNonce)
-  }, [setNonce, txNonce])
+    if (!isMultisigDetailedExecutionInfo(txDetails.detailedExecutionInfo)) return
+    setNonce(txDetails.detailedExecutionInfo.nonce)
+    setSafeTxGas(txDetails.detailedExecutionInfo.safeTxGas)
+  }, [setNonce, setSafeTxGas, txDetails.detailedExecutionInfo])
 
   useEffect(() => {
     createExistingTx(safeAddress, txDetails).then(setSafeTx).catch(setSafeTxError)
