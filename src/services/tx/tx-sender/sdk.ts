@@ -1,6 +1,5 @@
-import { getSafeSDK } from '@/hooks/coreSDK/safeCoreSDK'
+import { EthersAdapter, getSafeSDK } from '@/hooks/coreSDK/safeCoreSDK'
 import type Safe from '@safe-global/protocol-kit'
-import { EthersAdapter } from '@safe-global/protocol-kit'
 import { ethers } from 'ethers'
 import { isWalletRejection, isHardwareWallet } from '@/utils/wallets'
 import { OperationType, type SafeTransaction } from '@safe-global/safe-core-sdk-types'

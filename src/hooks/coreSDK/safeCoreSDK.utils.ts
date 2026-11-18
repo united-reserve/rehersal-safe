@@ -20,7 +20,7 @@ export type MultiSendContractOverrides = {
 }
 
 type SafeDeploymentVersionConfig = (typeof safeDeploymentsVersions)[string]
-const SAFE_DEPLOYMENT_VERSION_ORDER = ['1.4.1', '1.3.0', '1.2.0', '1.1.1', '1.0.0']
+const SAFE_DEPLOYMENT_VERSION_ORDER = ['1.5.0', '1.4.1', '1.3.0', '1.2.0', '1.1.1', '1.0.0']
 
 const getSafeDeploymentVersionConfig = (safeVersion: string): SafeDeploymentVersionConfig => {
   const matchedVersion = SAFE_DEPLOYMENT_VERSION_ORDER.find((version) => semverSatisfies(safeVersion, version))

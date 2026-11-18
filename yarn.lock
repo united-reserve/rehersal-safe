@@ -3817,10 +3817,10 @@
     web3-core "^1.8.1"
     web3-utils "^1.8.1"
 
-"@safe-global/safe-deployments@1.37.30", "@safe-global/safe-deployments@^1.26.0":
-  version "1.37.30"
-  resolved "https://registry.yarnpkg.com/@safe-global/safe-deployments/-/safe-deployments-1.37.30.tgz#6b9654b429424a3081ec99e34753fe933bf59746"
-  integrity sha512-fARm/2VkT4Om/EoaVG4G/TvxaXnVfJZQrsXi/3eDcIB0NwkjgTHoku7FfdY4Gl3EINCaUHnWT9t7CNMPJu/I5w==
+"@safe-global/safe-deployments@1.37.38", "@safe-global/safe-deployments@^1.26.0":
+  version "1.37.38"
+  resolved "https://registry.yarnpkg.com/@safe-global/safe-deployments/-/safe-deployments-1.37.38.tgz#1198ff83275e68f711c332de017d740fd172962c"
+  integrity sha512-d2XiqbYKlopR6AOmXQhgQPsz1RUP6S8NuXJ1tFp5kiqdoqWjYkW3bYd+01lWgpnDW8jkjhnHrTENLBSs0W+aIw==
   dependencies:
     semver "^7.6.2"
 
