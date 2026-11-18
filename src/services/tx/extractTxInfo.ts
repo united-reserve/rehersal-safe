@@ -18,6 +18,7 @@ import type { Custom, MultisigExecutionDetails, TransactionData } from '@safe-gl
 import { ethers } from 'ethers'
 import { EternalSafeTransaction } from '@/store/addedTxsSlice'
 import { buildMultisigTxId, normalizeTxId } from '@/utils/tx-id'
+import { decodeTxData, isTrustedDelegateCall } from './decodeTxData'
 
 const ZERO_ADDRESS: string = '0x0000000000000000000000000000000000000000'
 const EMPTY_DATA: string = '0x'
@@ -131,11 +132,16 @@ export const extractTxDetails = async (
   const dataByteLength = safeTx.data.data ? Buffer.byteLength(safeTx.data.data) : 0
   const dataSize = dataByteLength >= 2 ? Math.floor((dataByteLength - 2) / 2) : 0
 
+  const dataDecoded = decodeTxData(safeTx.data.data)
+  const multiSendCalls = dataDecoded?.method === 'multiSend' ? dataDecoded.parameters?.[0].valueDecoded : undefined
+
   const txInfo: Custom = {
     type: TransactionInfoType.CUSTOM,
     to: addressEx(safeTx.data.to),
     dataSize: dataSize.toString(),
     value: safeTx.data.value,
+    methodName: dataDecoded?.method,
+    actionCount: multiSendCalls?.length,
     isCancellation: isCancellation(safeAddress, safeTx.data, dataSize),
   }
 
@@ -143,14 +149,12 @@ export const extractTxDetails = async (
 
   const txData: TransactionData = {
     hexData: safeTx.data.data,
-    // Need to use some transaction decoder to get the decoded data
-    // e.g. tenderly, openchain, etc.
-    dataDecoded: undefined,
+    dataDecoded,
     to: addressEx(safeTx.data.to),
     value: safeTx.data.value,
     operation,
     addressInfoIndex: undefined,
-    trustedDelegateCallTarget: false,
+    trustedDelegateCallTarget: isTrustedDelegateCall(safe.chainId, safeTx.data.to, dataDecoded),
   }
 
   const txKey = await transactionKey(safeTx)

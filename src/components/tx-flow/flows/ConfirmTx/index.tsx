@@ -19,6 +19,7 @@ const ConfirmTxFlow = ({ txSummary, txDetails }: { txSummary: TransactionSummary
       }
       step={0}
       txSummary={txSummary}
+      hideNonce
     >
       <ConfirmProposedTx txSummary={txSummary} txDetails={txDetails} />
     </TxLayout>

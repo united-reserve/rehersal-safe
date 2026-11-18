@@ -4,7 +4,9 @@ import ExternalStore from '@/services/ExternalStore'
 import { Gnosis_safe__factory } from '@/types/contracts'
 import { invariant } from '@/utils/helpers'
 import type { Web3Provider } from '@ethersproject/providers'
-import Safe, { EthersAdapter } from '@safe-global/protocol-kit'
+import Safe, { EthersAdapter as ProtocolKitEthersAdapter } from '@safe-global/protocol-kit'
+import { safeDeploymentsVersions } from '@safe-global/protocol-kit/dist/src/contracts/config'
+import type { GetContractProps } from '@safe-global/safe-core-sdk-types'
 import type { SafeInfo } from '@safe-global/safe-gateway-typescript-sdk'
 import type { Provider } from '@ethersproject/providers'
 import { ethers } from 'ethers'
@@ -16,16 +18,62 @@ export const isLegacyVersion = (safeVersion: string): boolean => {
   return semverSatisfies(safeVersion, LEGACY_VERSION)
 }
 
-export type ModernSafeVersion = '1.1.1' | '1.2.0' | '1.3.0' | '1.4.1'
+export type ModernSafeVersion = '1.1.1' | '1.2.0' | '1.3.0' | '1.4.1' | '1.5.0'
 
 export const isValidSafeVersion = (safeVersion?: SafeInfo['version']): safeVersion is ModernSafeVersion => {
-  const SAFE_VERSIONS: ModernSafeVersion[] = ['1.4.1', '1.3.0', '1.2.0', '1.1.1']
+  const SAFE_VERSIONS: ModernSafeVersion[] = ['1.5.0', '1.4.1', '1.3.0', '1.2.0', '1.1.1']
   return !!safeVersion && SAFE_VERSIONS.some((version) => semverSatisfies(safeVersion, version))
 }
 
 // `assert` does not work with arrow functions
 export function assertValidSafeVersion<T extends SafeInfo['version']>(safeVersion?: T): asserts safeVersion {
   return invariant(isValidSafeVersion(safeVersion), `${safeVersion} is not a valid Safe Account version`)
+}
+
+// The pinned protocol-kit knows Safe versions up to 1.4.1. Safe 1.5.0 keeps the 1.4.1 signature of every
+// function and event the SDK and this app call (1.5.0 only removed encodeTransactionData and getChainId),
+// so 1.5.x contracts are resolved from the 1.5.0 deployments and driven through the 1.4.1 wrappers.
+safeDeploymentsVersions['1.5.0'] ??= {
+  safeMasterCopyVersion: '1.5.0',
+  safeMasterCopyL2Version: '1.5.0',
+  safeProxyFactoryVersion: '1.5.0',
+  compatibilityFallbackHandler: '1.5.0',
+  multiSendVersion: '1.5.0',
+  multiSendCallOnlyVersion: '1.5.0',
+  signMessageLibVersion: '1.5.0',
+  createCallVersion: '1.5.0',
+}
+
+const withWrapperVersion = (props: GetContractProps): GetContractProps => ({
+  ...props,
+  safeVersion: semverSatisfies(props.safeVersion, '1.5.x') ? '1.4.1' : props.safeVersion,
+})
+
+export class EthersAdapter extends ProtocolKitEthersAdapter {
+  getSafeContract(props: GetContractProps) {
+    return super.getSafeContract(withWrapperVersion(props))
+  }
+  getSafeProxyFactoryContract(props: GetContractProps) {
+    return super.getSafeProxyFactoryContract(withWrapperVersion(props))
+  }
+  getMultiSendContract(props: GetContractProps) {
+    return super.getMultiSendContract(withWrapperVersion(props))
+  }
+  getMultiSendCallOnlyContract(props: GetContractProps) {
+    return super.getMultiSendCallOnlyContract(withWrapperVersion(props))
+  }
+  getCompatibilityFallbackHandlerContract(props: GetContractProps) {
+    return super.getCompatibilityFallbackHandlerContract(withWrapperVersion(props))
+  }
+  getSignMessageLibContract(props: GetContractProps) {
+    return super.getSignMessageLibContract(withWrapperVersion(props))
+  }
+  getCreateCallContract(props: GetContractProps) {
+    return super.getCreateCallContract(withWrapperVersion(props))
+  }
+  getSimulateTxAccessorContract(props: GetContractProps) {
+    return super.getSimulateTxAccessorContract(withWrapperVersion(props))
+  }
 }
 
 export const createEthersAdapter = (provider: Web3Provider) => {
