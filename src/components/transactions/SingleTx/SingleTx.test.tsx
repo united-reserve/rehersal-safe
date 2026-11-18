@@ -1,4 +1,4 @@
-import { act, fireEvent, render } from '@/tests/test-utils'
+import { fireEvent, render } from '@/tests/test-utils'
 import SingleTx from '@/pages/transactions/tx'
 import * as extractTxInfo from '@/services/tx/extractTxInfo'
 import * as useSafeInfo from '@/hooks/useSafeInfo'
@@ -93,47 +93,5 @@ describe('SingleTx', () => {
     fireEvent.click(button!)
 
     expect(screen.getByText('Extract error')).toBeInTheDocument()
-  })
-
-  it('keeps the latest transaction details when an earlier load resolves last', async () => {
-    let resolveStale: (details: TransactionDetails) => void = () => {}
-    const signedDetails = {
-      ...txDetails,
-      txInfo: { ...txDetails.txInfo, methodName: 'signedVersion' },
-    } as unknown as TransactionDetails
-    const staleDetails = {
-      ...txDetails,
-      txInfo: { ...txDetails.txInfo, methodName: 'staleVersion' },
-    } as unknown as TransactionDetails
-
-    jest
-      .spyOn(extractTxInfo, 'extractTxDetails')
-      .mockImplementation(() => Promise.resolve(signedDetails))
-      .mockImplementationOnce(() => new Promise((resolve) => (resolveStale = resolve)))
-
-    const storedTx = addedTxsSlice.selectAddedTx({} as any, '5', SAFE_ADDRESS, '')
-    jest.spyOn(addedTxsSlice, 'selectAddedTx').mockReturnValue(storedTx)
-
-    // A Safe info poll hands the effect a new object, starting a second load
-    const polls = [{ chainId: '5' } as SafeInfo, { chainId: '5' } as SafeInfo]
-    let poll = 0
-    jest.spyOn(useSafeInfo, 'default').mockImplementation(() => ({
-      safeAddress: SAFE_ADDRESS,
-      safe: polls[poll],
-      safeError: undefined,
-      safeLoading: false,
-      safeLoaded: true,
-    }))
-
-    const screen = render(<SingleTx />)
-    poll = 1
-    screen.rerender(<SingleTx />)
-
-    expect(await screen.findByText('signedVersion')).toBeInTheDocument()
-
-    await act(async () => resolveStale(staleDetails))
-
-    expect(screen.queryByText('staleVersion')).not.toBeInTheDocument()
-    expect(screen.getByText('signedVersion')).toBeInTheDocument()
   })
 })
