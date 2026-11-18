@@ -53,15 +53,23 @@ const SingleTx = () => {
   useEffect(() => {
     if (!safeAddress || !transaction || !transactionId) return
 
+    // Runs overlap (polling, new signatures); only the latest may update the view
+    let isCurrent = true
+
     extractTxDetails(safeAddress, transaction, safe, transactionId)
       .then((details) => {
         if (executedTx) {
           enrichTransactionDetailsFromHistory(details, executedTx)
         }
-        return details
+        if (isCurrent) setTxDetails(details)
       })
-      .then(setTxDetails)
-      .catch(setTxDetailsError)
+      .catch((error) => {
+        if (isCurrent) setTxDetailsError(error)
+      })
+
+    return () => {
+      isCurrent = false
+    }
   }, [safeAddress, transaction, safe, transactionId, executedTx])
 
   useEffect(() => {
