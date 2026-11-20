@@ -115,6 +115,37 @@ describe('isTrustedDelegateCall', () => {
     expect(isTrustedDelegateCall(CHAIN_ID, MULTI_SEND_CALL_ONLY_141, decodeTxData(SET_CODE_SIGNER))).toBe(false)
   })
 
+  // MultiSend 1.5.0 turns a zero recipient into the executing contract, so the page must show that address
+  describe('a zero recipient', () => {
+    const SAFE = '0xAe96f62f86f2705D83d86Fa7F186d4d2434408Be'
+    const ZERO = '0x0000000000000000000000000000000000000000'
+    const CHANGE_THRESHOLD = '0x694e80c3' + '1'.padStart(64, '0')
+    const batch = encodeBatch([{ operation: 0, to: ZERO, data: CHANGE_THRESHOLD }])
+    const recipient = (to: string, operation: number) =>
+      decodeTxData(batch, { chainId: CHAIN_ID, to, operation, safeAddress: SAFE })?.parameters?.[0].valueDecoded?.[0].to
+
+    it('is shown as the Safe for a delegate call to MultiSend 1.5.0', () => {
+      expect(recipient(MULTI_SEND_CALL_ONLY_150, 1)).toBe(SAFE)
+      expect(recipient(MULTI_SEND_150, 1)).toBe(SAFE)
+    })
+
+    it('is shown as the MultiSend contract for a plain call to MultiSend 1.5.0', () => {
+      expect(recipient(MULTI_SEND_CALL_ONLY_150, 0)).toBe(MULTI_SEND_CALL_ONLY_150)
+    })
+
+    it('stays zero for MultiSend 1.4.1, any other target, and without the transaction', () => {
+      expect(recipient(MULTI_SEND_CALL_ONLY_141, 1)).toBe(ZERO)
+      expect(recipient(REGISTRY, 1)).toBe(ZERO)
+      expect(decodeTxData(batch)?.parameters?.[0].valueDecoded?.[0].to).toBe(ZERO)
+    })
+
+    it('leaves the packed bytes and explicit recipients as they are', () => {
+      const tx = { chainId: CHAIN_ID, to: MULTI_SEND_CALL_ONLY_150, operation: 1, safeAddress: SAFE }
+      expect(decodeTxData(batch, tx)?.parameters?.[0].value).toBe(decodeTxData(batch)?.parameters?.[0].value)
+      expect(decodeTxData(WIRING_BATCH, tx)).toEqual(decodeTxData(WIRING_BATCH))
+    })
+  })
+
   it('does not trust a batch sent to any other target', () => {
     const batch = decodeTxData(WIRING_BATCH)
     expect(isTrustedDelegateCall(CHAIN_ID, '0x0E44644106A3bB83D7872F8511d90a4479fE751d', batch)).toBe(false)

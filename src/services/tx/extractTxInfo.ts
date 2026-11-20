@@ -132,7 +132,14 @@ export const extractTxDetails = async (
   const dataByteLength = safeTx.data.data ? Buffer.byteLength(safeTx.data.data) : 0
   const dataSize = dataByteLength >= 2 ? Math.floor((dataByteLength - 2) / 2) : 0
 
-  const dataDecoded = decodeTxData(safeTx.data.data)
+  const operation = (safeTx.data.operation ?? Operation.CALL) as unknown as Operation
+
+  const dataDecoded = decodeTxData(safeTx.data.data, {
+    chainId: safe.chainId,
+    to: safeTx.data.to,
+    operation,
+    safeAddress,
+  })
   const multiSendCalls = dataDecoded?.method === 'multiSend' ? dataDecoded.parameters?.[0].valueDecoded : undefined
 
   const txInfo: Custom = {
@@ -144,8 +151,6 @@ export const extractTxDetails = async (
     actionCount: multiSendCalls?.length,
     isCancellation: isCancellation(safeAddress, safeTx.data, dataSize),
   }
-
-  const operation = (safeTx.data.operation ?? Operation.CALL) as unknown as Operation
 
   const txData: TransactionData = {
     hexData: safeTx.data.data,
