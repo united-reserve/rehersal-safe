@@ -8,7 +8,12 @@ it('initializes wallet connection for Ethereum mainnet with its explorer', () =>
   expect(() => createOnboard(configs, configs[0], { '1': configs[0].publicRpcUri.value })).not.toThrow()
   expect(Onboard).toHaveBeenCalledWith(
     expect.objectContaining({
-      chains: [expect.objectContaining({ publicRpcUrl: 'https://ethereum-rpc.publicnode.com', blockExplorerUrl: 'https://etherscan.io' })],
+      chains: [
+        expect.objectContaining({
+          publicRpcUrl: 'https://ethereum-rpc.publicnode.com',
+          blockExplorerUrl: 'https://etherscan.io',
+        }),
+      ],
     }),
   )
 })
