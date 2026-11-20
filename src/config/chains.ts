@@ -18,7 +18,6 @@ const chains = networks.reduce<Chains>((result, { shortName, chainId }) => {
 
 // Keep Sonic available until protocol-kit ships the shortName mapping in this app's pinned version.
 chains.sonic = '146'
-chains.rehersal = '7311026'
 
 const ChainLogos = {
   [chains.eth]: '/images/networks/mainnet.svg',

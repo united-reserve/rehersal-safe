@@ -20,7 +20,7 @@
     "css-vars": "npx -y tsx ./scripts/css-vars.ts > ./src/styles/vars.css && prettier -w src/styles/vars.css",
     "generate-types": "typechain --target ethers-v5 --out-dir src/types/contracts ./node_modules/@safe-global/safe-deployments/dist/assets/**/*.json ./node_modules/@safe-global/safe-modules-deployments/dist/assets/**/*.json ./node_modules/@openzeppelin/contracts/build/contracts/ERC20.json ./node_modules/@openzeppelin/contracts/build/contracts/ERC721.json",
     "after-install": "yarn generate-types",
-    "postinstall": "node scripts/rehearsal-deployments.cjs && yarn after-install",
+    "postinstall": "yarn after-install",
     "analyze": "cross-env ANALYZE=true yarn build",
     "serve": "npx -y serve out -p ${REVERSE_PROXY_UI_PORT:=8080}",
     "static-serve": "yarn build && yarn serve"

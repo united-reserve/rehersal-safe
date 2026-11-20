@@ -63,7 +63,7 @@ export const initialState: SettingsState = {
     safeAppsUseLightBackground: true,
   },
   env: {
-    rpc: { '7311026': 'https://2-31-103-209.sslip.io' },
+    rpc: { '1': 'https://ethereum-rpc.publicnode.com' },
     tenderly: {
       orgName: '',
       projectName: '',

@@ -8,7 +8,7 @@ import { prefixedAddressRe } from '@/utils/url'
 import useWallet from './wallets/useWallet'
 import useChains from './useChains'
 
-const defaultChainId = '7311026'
+const defaultChainId = '1'
 
 // Use the location object directly because Next.js's router.query is available only on mount
 export const getLocationQuery = (): ParsedUrlQuery => {

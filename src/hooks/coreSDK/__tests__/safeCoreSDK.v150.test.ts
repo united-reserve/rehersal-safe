@@ -7,12 +7,12 @@ import type { SafeVersion } from '@safe-global/safe-core-sdk-types'
 import { EthersAdapter, isValidSafeVersion } from '../safeCoreSDK'
 import { getSafeContract as getAppSafeContract } from '@/utils/safe-versions'
 
-const CHAIN_ID = 7311026
+const CHAIN_ID = 1
 const SAFE_ADDRESS = '0xad32ed6f41232970DEdeff94A99481EDEEde877c'
 
 const provider = new ethers.providers.StaticJsonRpcProvider('http://127.0.0.1:1', {
   chainId: CHAIN_ID,
-  name: 'rehersal',
+  name: 'homestead',
 })
 
 describe('Safe 1.5.0 support', () => {

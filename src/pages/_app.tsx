@@ -96,7 +96,7 @@ const WebCoreApp = ({
   return (
     <StoreHydrator>
       <Head>
-        <title key="default-title">{'United Reserve Rehearsal · Eternal Safe'}</title>
+        <title key="default-title">{'United Reserve Team Safe · Eternal Safe'}</title>
         <MetaTags />
       </Head>
 
@@ -106,9 +106,9 @@ const WebCoreApp = ({
 
           <InitApp />
           <div style={{ padding: '10px 20px', background: '#f4f2eb', color: '#242820', textAlign: 'center' }}>
-            United Reserve Rehearsal · Chain 7311026 · Test ETH only ·{' '}
-            <a href="https://rehersal.unitedreserve.xyz/testing" target="_top">
-              Testing guide
+            United Reserve Team Safe · Ethereum mainnet · Check the transaction hash on your wallet before you sign ·{' '}
+            <a href="https://docs.unitedreserve.xyz/contracts/addresses" target="_blank" rel="noreferrer">
+              Official addresses
             </a>
           </div>
 

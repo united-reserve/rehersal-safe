@@ -4,5 +4,5 @@
   "installCommand": null,
   "outputDirectory": ".",
   "trailingSlash": true,
-  "headers": [{"source":"/(.*)","headers":[{"key":"X-Content-Type-Options","value":"nosniff"},{"key":"X-Robots-Tag","value":"noindex, nofollow"},{"key":"Content-Security-Policy","value":"frame-ancestors 'self' https://rehersal.unitedreserve.xyz"}]}]
+  "headers": [{"source":"/(.*)","headers":[{"key":"X-Content-Type-Options","value":"nosniff"},{"key":"X-Robots-Tag","value":"noindex, nofollow"},{"key":"Content-Security-Policy","value":"frame-ancestors 'none'"}]}]
 }

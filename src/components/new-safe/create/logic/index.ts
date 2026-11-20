@@ -63,7 +63,7 @@ export const getSafeDeployProps = async (
  */
 export const createNewSafe = async (ethersProvider: Web3Provider, props: DeploySafeProps): Promise<Safe> => {
   const chainId = await ethersProvider.send('eth_chainId', [])
-  if (Number(chainId) !== 7311026) throw new Error('Switch your wallet to United Reserve Rehearsal (7311026).')
+  if (Number(chainId) !== 1) throw new Error('Switch your wallet to Ethereum mainnet.')
   const ethAdapter = createEthersAdapter(ethersProvider)
 
   const safeFactory = await SafeFactory.create({
