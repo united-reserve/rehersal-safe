@@ -34,7 +34,7 @@ module.exports = async (req, res) => {
 
     const { blobs } = await list({ prefix: `signatures/${safeTxHash}/`, limit: 50 })
     const signatures = blobs
-      .map(({ pathname }) => pathname.split('/')[2].replace('.json', '').split('-'))
+      .map(({ pathname }) => (pathname.split('/')[2] || '').replace('.json', '').split('-'))
       .filter(([owner, signature]) => ADDRESS.test(owner) && SIGNATURE.test(signature))
       .map(([owner, signature]) => ({ owner, signature }))
     return res.status(200).json({ signatures })

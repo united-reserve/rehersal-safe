@@ -8,9 +8,16 @@ export const SIGNATURES_URL = process.env.NEXT_PUBLIC_SIGNATURES_URL || ''
 
 export type SharedSignature = { owner: string; signature: string }
 
+const HASH = /^0x[0-9a-fA-F]{64}$/
+const ADDRESS = /^0x[0-9a-fA-F]{40}$/
+const SIGNATURE = /^0x[0-9a-fA-F]{130}$/
+
 // True when the signature over this Safe transaction hash was made by this owner.
 // An owner signs either the hash itself (v 27/28) or its personal-message form (v 31/32).
 export const isOwnerSignature = (safeTxHash: string, owner: string, signature: string): boolean => {
+  // The Safe reads each signature as exactly 65 bytes; shorter encodings that recover correctly are still unusable
+  if (!HASH.test(safeTxHash) || !ADDRESS.test(owner) || !SIGNATURE.test(signature)) return false
+
   try {
     const v = parseInt(signature.slice(-2), 16)
     if (v === 27 || v === 28) return sameAddress(recoverAddress(safeTxHash, signature), owner)

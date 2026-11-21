@@ -35,6 +35,12 @@ describe('isOwnerSignature', () => {
     expect(isOwnerSignature(other, owner.address, typedDataSignature(owner))).toBe(false)
   })
 
+  it('rejects the 64-byte compact form of a valid signature', () => {
+    const { compact } = splitSignature(typedDataSignature(owner))
+    expect(compact).toHaveLength(130)
+    expect(isOwnerSignature(safeTxHash, owner.address, compact)).toBe(false)
+  })
+
   it('rejects approved-hash, contract and malformed signatures', () => {
     const approved = '0x' + '00'.repeat(12) + owner.address.slice(2).toLowerCase() + '00'.repeat(32) + '01'
     expect(isOwnerSignature(safeTxHash, owner.address, approved)).toBe(false)
