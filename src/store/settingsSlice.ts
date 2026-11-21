@@ -1,4 +1,5 @@
 import type { PayloadAction } from '@reduxjs/toolkit'
+import { SIGNING_CHAIN_ID, SIGNING_RPC_URL } from '@/config/supportedChains'
 import { createSelector, createSlice } from '@reduxjs/toolkit'
 import merge from 'lodash/merge'
 
@@ -63,7 +64,7 @@ export const initialState: SettingsState = {
     safeAppsUseLightBackground: true,
   },
   env: {
-    rpc: { '1': 'https://ethereum-rpc.publicnode.com' },
+    rpc: { [SIGNING_CHAIN_ID]: SIGNING_RPC_URL },
     tenderly: {
       orgName: '',
       projectName: '',

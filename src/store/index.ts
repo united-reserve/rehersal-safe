@@ -1,3 +1,4 @@
+import { PUBLIC_RPC_URL, SIGNING_CHAIN_ID, SIGNING_RPC_URL } from '@/config/supportedChains'
 import {
   configureStore,
   combineReducers,
@@ -92,7 +93,15 @@ export const _hydrationReducer: typeof rootReducer = (state, action) => {
      * @see https://lodash.com/docs/4.17.15#merge
      */
 
-    return merge({}, state, action.payload)
+    const merged = merge({}, state, action.payload)
+
+    // A browser that saved the earlier public RPC as its setting moves to the RPC this build ships with
+    const savedRpc = merged.settings?.env?.rpc
+    if (savedRpc?.[SIGNING_CHAIN_ID] === PUBLIC_RPC_URL) {
+      savedRpc[SIGNING_CHAIN_ID] = SIGNING_RPC_URL
+    }
+
+    return merged
   }
   return rootReducer(state, action)
 }

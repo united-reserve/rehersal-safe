@@ -1,7 +1,10 @@
 import type { ChainInfo } from '@safe-global/safe-gateway-typescript-sdk'
-// The only network this page serves: Ethereum mainnet, read through a public RPC
+// The only network this page serves: Ethereum mainnet
 export const SIGNING_CHAIN_ID = '1'
-const rpc = { authentication: 'NO_AUTHENTICATION', value: 'https://ethereum-rpc.publicnode.com' }
+// The RPC the page reads the chain through. A build can supply its own; the public one is the fallback.
+export const PUBLIC_RPC_URL = 'https://ethereum-rpc.publicnode.com'
+export const SIGNING_RPC_URL = process.env.NEXT_PUBLIC_RPC_URL || PUBLIC_RPC_URL
+const rpc = { authentication: 'NO_AUTHENTICATION', value: SIGNING_RPC_URL }
 export const getChainsConfig = (): ChainInfo[] => [
   {
     chainId: SIGNING_CHAIN_ID,
