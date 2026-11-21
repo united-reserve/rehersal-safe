@@ -52,3 +52,5 @@ yalc.lock
 /public/*.js.LICENSE.txt
 
 public/signatures/fourbyte-signatures.csv
+serverless/node_modules
+build-api
