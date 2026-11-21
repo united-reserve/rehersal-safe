@@ -33,6 +33,7 @@ import WalletConnectProvider from '@/components/common/WalletConnectProvider'
 import WalletConnectTransactionHandler from '@/components/common/WalletConnectTransactionHandler'
 import { ConfirmationDialogProvider } from '@/components/common/ConfirmationDialog'
 import { useMagicLink } from '@/hooks/useMagicLink'
+import useSharedSignatures from '@/hooks/useSharedSignatures'
 import { useMagicNetwork } from '@/hooks/useMagicNetwork'
 
 const InitApp = (): null => {
@@ -47,6 +48,7 @@ const InitApp = (): null => {
   useTxPendingStatuses()
   useSafeMessagePendingStatuses()
   useMagicLink()
+  useSharedSignatures()
   useMagicNetwork()
 
   return null
